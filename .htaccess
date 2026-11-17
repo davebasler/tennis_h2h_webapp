@@ -1,0 +1,17 @@
+# Apache (e.g. bplaced): hide files that aren't part of the public site.
+# data/ and lib/ have their own .htaccess that denies all web access.
+
+<FilesMatch "^(config(\.sample)?\.php|dev-server\.js|package\.json|README\.md|\.gitignore|\.gitattributes|\.bash_profile)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "same-origin"
+</IfModule>

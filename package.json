@@ -1,0 +1,13 @@
+{
+  "name": "h2h",
+  "private": true,
+  "description": "Head-to-head tennis records for friends.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "node --disable-warning=ExperimentalWarning dev-server.js",
+    "test": "node --test \"tests/**/*.test.js\""
+  }
+}

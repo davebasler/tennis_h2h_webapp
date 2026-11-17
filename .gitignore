@@ -1,0 +1,11 @@
+# Local configuration (contains the admin password)
+config.php
+
+# Live database and sessions - back up via the "Backup" button instead
+data/*.sqlite
+data/*.sqlite-*
+data/sessions/
+
+node_modules/
+.DS_Store
+Thumbs.db
