@@ -22,6 +22,11 @@ function openModal({ title, body, foot = '', narrow = false, onClose }) {
     </dialog>`);
   document.body.append(dlg);
 
+  // Safety net: forms in dialogs are always handled in JS. Even if a dialog's
+  // setup throws before its own submit handler is attached, never fall back to
+  // a native submit (which would reload the page and silently drop the input).
+  dlg.addEventListener('submit', (e) => e.preventDefault());
+
   // Close on backdrop click (but not when a text selection drag ends outside).
   let downOnBackdrop = false;
   dlg.addEventListener('pointerdown', (e) => {
@@ -292,7 +297,7 @@ export function openMatchEditor({ match = null, players, matches, defaults = {},
       retired: '· the player who did not retire',
       walkover: '· who got the walkover',
     }[v.outcome];
-    $('input[name=winner]', dlg).forEach((r) => {
+    $$('input[name=winner]', dlg).forEach((r) => {
       r.disabled = v.outcome === 'completed';
       if (derived) r.checked = Number(r.value) === winner;
     });
@@ -340,8 +345,19 @@ export function openMatchEditor({ match = null, players, matches, defaults = {},
     }
   }
 
-  renderGrid(m);
-  update();
+  // Wire the submit handler before the first render: if anything below ever
+  // throws, the form must still never fall back to a native (page-reloading) submit.
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    withBusy(dlg, async () => {
+      const { error } = readSets();
+      if (error) throw new Error(error);
+      const payload = { ...normalizeMatch(currentValues(), playerIds), id: match?.id };
+      const res = await api.saveMatch(payload);
+      dlg.close();
+      onSaved(res.match);
+    });
+  });
 
   $('[data-add-set]', dlg).addEventListener('click', () => {
     const v = currentValues();
@@ -365,18 +381,6 @@ export function openMatchEditor({ match = null, players, matches, defaults = {},
   });
   form.addEventListener('change', update);
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    withBusy(dlg, async () => {
-      const { error } = readSets();
-      if (error) throw new Error(error);
-      const payload = { ...normalizeMatch(currentValues(), playerIds), id: match?.id };
-      const res = await api.saveMatch(payload);
-      dlg.close();
-      onSaved(res.match);
-    });
-  });
-
   const del = $('[data-delete]', dlg);
   if (del) {
     armDelete(del, () =>
@@ -387,6 +391,9 @@ export function openMatchEditor({ match = null, players, matches, defaults = {},
       }),
     );
   }
+
+  renderGrid(m);
+  update();
   if (!match) form.event.focus();
 }
 

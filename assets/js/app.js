@@ -557,6 +557,10 @@ window.addEventListener('popstate', () => {
 
 // ------------------------------------------------------------------- boot
 
+// Never fail silently: surface unexpected script errors to whoever is using the page.
+window.addEventListener('error', (e) => toast(`Something went wrong: ${e.message}`, 'error'));
+window.addEventListener('unhandledrejection', (e) => toast(`Something went wrong: ${e.reason?.message ?? e.reason}`, 'error'));
+
 initPickers();
 initTooltips();
 await load();

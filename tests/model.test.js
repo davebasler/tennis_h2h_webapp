@@ -68,6 +68,15 @@ test('age from year or full date', () => {
   assert.equal(age('1997-11-17', now), 29);
 });
 
+test('UI code never iterates over a single-element $() lookup', () => {
+  // $() returns one element, $$() an array. Mixing them up broke the match dialog once.
+  for (const file of fs.readdirSync(new URL('../assets/js/', import.meta.url))) {
+    const src = fs.readFileSync(new URL(`../assets/js/${file}`, import.meta.url), 'utf8');
+    const bad = src.match(/(?<!\$)\$\([^()]*\)\.(forEach|map|filter|some|every)\(/);
+    assert.equal(bad, null, `${file}: ${bad?.[0]}`);
+  }
+});
+
 test('demo seed data is valid and its statistics add up', () => {
   const seed = JSON.parse(fs.readFileSync(new URL('../data/seed.json', import.meta.url), 'utf8'));
   const seedIds = new Set(seed.players.map((p) => p.id));
