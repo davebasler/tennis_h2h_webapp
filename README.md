@@ -2,6 +2,8 @@
 
 Head-to-head tennis records for a group of friends, styled like a pro-tour H2H page.
 
+![Head-to-head page with both players, their H2H record, player comparison and stats](docs/screenshots/h2h.webp)
+
 - **One page for every matchup.** Pick two players with the search fields (or swap them). The
   selection is kept in the URL (`?p1=alex&p2=robin`), so any matchup can be bookmarked or shared.
 - **Everything is calculated from the match list:** H2H record, sets, games, tie-breaks, deciding
@@ -10,6 +12,15 @@ Head-to-head tennis records for a group of friends, styled like a pro-tour H2H p
   entry (the winner is worked out from the sets) and to add or edit players, including a photo.
 - **Simple database.** SQLite by default (a single file, nothing to set up), MySQL optional.
 - Works on phones, follows the system light or dark mode.
+
+<p>
+  <img src="docs/screenshots/mobile.webp" alt="Phone layout" width="35%">
+  <img src="docs/screenshots/add-match-dark.webp" alt="Adding a match in admin mode, dark mode" width="61%">
+</p>
+
+![Match list grouped by season with surface and season filters, dark mode](docs/screenshots/matches-dark.webp)
+
+*The screenshots show the included demo data: all players and results are fictional.*
 
 ## Deploying (bplaced or any PHP host)
 
@@ -70,4 +81,5 @@ lib/store.php         database access, schema, seeding
 lib/validate.php      PHP port of model.js validation
 data/seed.json        demo data (fictional players and results)
 dev-server.js         local server without PHP
+docs/screenshots/     README images (not needed on the server)
 ```
